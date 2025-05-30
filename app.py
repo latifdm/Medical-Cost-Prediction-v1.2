@@ -22,14 +22,9 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "age",
         "bmi",
         "children",
-        "sex_female",
-        "sex_male",
-        "smoker_no",
-        "smoker_yes",
-        "region_northeast",
-        "region_northwest",
-        "region_southeast",
-        #"region_southwest",
+        "sex",
+        "smoker",
+        "region",
     ]
 
     data = {
@@ -37,16 +32,11 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "bmi": bmi,
         "children": children,
         # one-hot encoding — sex (matching 'Pria'/'Wanita' from selectbox)
-        "sex_female": 1 if sex == "Wanita" else 0,
-        "sex_male": 1 if sex == "Pria" else 0,
+        "sex": 0 if sex == 'Pria' else 1,
         # one-hot encoding — smoker (matching 'Ya'/'Tidak' from selectbox)
-        "smoker_no": 1 if smoker == "Tidak" else 0,
-        "smoker_yes": 1 if smoker == "Ya" else 0,
+        "smoker": 0 if smoker == 'Ya' else 1,
         # one-hot encoding — region
-        "region_northeast": 1 if region == "northeast" else 0,
-        "region_northwest": 1 if region == "northwest" else 0,
-        "region_southeast": 1 if region == "southeast" else 0,
-        #"region_southwest": 1 if region == "southwest" else 0,
+        "region": 0 if region == 'southwest' else 1 if region == 'northeast' else 2 if region == 'northwest' else 3
     }
 input_data_for_df = {col: data[col] for col in cols}
 return pd.DataFrame([input_data_for_df])[cols]
