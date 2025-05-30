@@ -6,20 +6,11 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# 1. st.set_page_config() HARUS JADI YANG PERTAMA (setelah import)
-st.set_page_config(
-    page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
-)
-
 with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
      Gradient_Boosting_Regressor_Model = pickle.load(file)
 
 # --- Utility Functions (Global Scope, setelah set_page_config) ---
 def calculate_bmi(height_cm, weight_kg):
-    """
-    Calculates BMI given height in centimeters and weight in kilograms.
-    BMI = weight (kg) / (height (m))^2
-    """
     if height_cm <= 0 or weight_kg <= 0:
         return 0 # Handle invalid input gracefully
     height_m = height_cm / 100
