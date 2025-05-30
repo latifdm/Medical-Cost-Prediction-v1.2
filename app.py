@@ -6,13 +6,12 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# 1. st.set_page_config() HARUS JADI YANG PERTAMA (setelah import)
 st.set_page_config(
     page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
 )
 
-# 2. Kemudian, panggil fungsi-fungsi Streamlit lain atau muat resource
-@st.cache_resource # Gunakan st.cache_resource untuk model/objek besar
+
+@st.cache_resource
 def load_model():
     with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
         model = pickle.load(file)
@@ -20,21 +19,19 @@ def load_model():
 
 Gradient_Boosting_Regressor_Model = load_model()
 
-# --- Utility Functions ---
-def calculate_bmi(height, weight): # Variabel parameter disesuaikan
+
+def calculate_bmi(height, weight):
     """
     Calculates BMI given height in centimeters and weight in kilograms.
     BMI = weight (kg) / (height (m))^2
     """
     if height <= 0 or weight <= 0:
-        return 0 # Handle invalid input gracefully
+        return 0
     height_m = height / 100
     return weight / (height_m ** 2)
 
 def preprocess_input(age, bmi, children, sex, smoker, region) -> pd.DataFrame:
     """Konversi input user ➜ DataFrame yang kompatibel dengan model (dengan one-hot encoding)."""
-    # Kolom ini HARUS SESUAI dengan 10 fitur yang digunakan model Anda saat dilatih.
-    # Berdasarkan diskusi sebelumnya, asumsi ini adalah yang paling mungkin untuk 10 fitur.
     cols = [
         "age",
         "bmi",
@@ -50,24 +47,16 @@ def preprocess_input(age, bmi, children, sex, smoker, region) -> pd.DataFrame:
         "age": age,
         "bmi": bmi,
         "children": children,
-        # One-hot encoding untuk 'sex'
         "sex_male": 1 if sex == "Pria" else 0,
-        # One-hot encoding untuk 'smoker'
         "smoker_yes": 1 if smoker == "Ya" else 0,
-        # One-hot encoding untuk 'region' (asumsi 'southwest' di-drop)
         "region_northwest": 1 if region == "northwest" else 0,
         "region_southeast": 1 if region == "southeast" else 0,
         "region_southwest": 1 if region == "southwest" else 0,
-        # 'region_southwest' tidak dibuat sebagai kolom eksplisit,
-        # tetapi diwakili ketika semua kolom region lainnya adalah 0.
     }
 
-    # Buat DataFrame hanya dengan kolom yang ada di `cols` dan urutan yang benar
     input_data_for_df = {col: data[col] for col in cols}
-    return pd.DataFrame([input_data_for_df])[cols] # Ini diindentasi dengan benar
+    return pd.DataFrame([input_data_for_df])[cols]
 
-
-# --- Sidebar, Pages, dll. ---
 with st.sidebar:
     st.markdown("### Menu")
     page = st.selectbox(
@@ -94,28 +83,28 @@ if page == "Home":
     members = [
         {
             "name": "Ahmad Azhar Naufal Farizky",
-            "photo": "profile.svg", # Ensure profile.svg exists or provide a placeholder
-            "li": "https://linkedin.com/in/ahmad-azhar-naufal-farizky-3b3b3b2b", # Placeholder LinkedIn
+            "photo": "profile.svg", 
+            "li": "https://linkedin.com/in/ahmad-azhar-naufal-farizky-3b3b3b2b",
         },
         {
             "name": "Kristina Sarah Yuliana",
             "photo": "profile.svg",
-            "li": "https://linkedin.com/in/kristina-sarah-yuliana-3b3b3b2c", # Placeholder LinkedIn
+            "li": "https://linkedin.com/in/kristina-sarah-yuliana-3b3b3b2c",
         },
         {
             "name": "Latif Dwi Mardani",
             "photo": "profile.svg",
-            "li": "https://linkedin.com/in/latif-dwi-mardani-3b3b3b2d", # Placeholder LinkedIn
+            "li": "https://linkedin.com/in/latif-dwi-mardani-3b3b3b2d",
         },
         {
             "name": "Jalu Prayoga",
             "photo": "profile.svg",
-            "li": "https://linkedin.com/in/jalu-prayoga-3b3b3b2e", # Placeholder LinkedIn
+            "li": "https://linkedin.com/in/jalu-prayoga-3b3b3b2e",
         },
         {
             "name": "Ayasha Naila Ismunandar",
             "photo": "profile.svg",
-            "li": "https://linkedin.com/in/ayasha-naila-ismunandar-3b3b3b2f", # Placeholder LinkedIn
+            "li": "https://linkedin.com/in/ayasha-naila-ismunandar-3b3b3b2f",
         },
     ]
 
@@ -140,7 +129,6 @@ elif page == "Machine Learning App":
 
     # Membuat Struktur Form
     left, right = st.columns((2, 2))
-    # Pastikan semua widget input Anda memiliki label eksplisit
     age = st.number_input('Usia', value=25)
     sex = left.selectbox('Jenis Kelamin', ('Pria', 'Wanita'))
     smoker = right.selectbox('Apakah Merokok', ('Ya', 'Tidak'))
@@ -149,19 +137,16 @@ elif page == "Machine Learning App":
     children = left.selectbox("Jumlah Anak", list(range(0, 6)), index=0)
     region = right.selectbox('Lokasi Tinggal', ("southeast", "southwest", "northwest"))
 
-    # Calculate BMI here, before the predict button logic
+    
     bmi = calculate_bmi(height, weight)
 
-    # Single "Predict Medical Cost" button
     if st.button("Predict Medical Cost"):
         try:
-            # model is already loaded and assigned to Gradient_Boosting_Regressor_Model
             model = Gradient_Boosting_Regressor_Model
-        except Exception as e: # Catch a broader exception for initial debugging if model loading fails
+        except Exception as e:
             st.error(f"⚠️ **Error loading model**: {e}. Pastikan file model Anda benar.")
             st.stop()
 
-        # Preprocess input with the correct variable names
         input_df = preprocess_input(age, bmi, children, sex, smoker, region)
         
         prediction = Gradient_Boosting_Regressor_Model.predict(input_df)[0]
@@ -191,7 +176,6 @@ elif page == "Dashboard":
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Distribusi BMI")
-        # Ensure 'bmi' column exists and is numeric if using df['bmi'] directly
         if 'bmi' in df.columns:
             fig, ax = plt.subplots()
             sns.histplot(df["bmi"], kde=True, ax=ax)
