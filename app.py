@@ -53,15 +53,13 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "bmi": bmi,
         "children": children,
         # One-hot encoding untuk 'sex'
-        "sex_female": 1 if sex == "Wanita" else 0,
         "sex_male": 1 if sex == "Pria" else 0,
         # One-hot encoding untuk 'smoker'
-        "smoker_no": 1 if smoker == "Tidak" else 0,
         "smoker_yes": 1 if smoker == "Ya" else 0,
         # One-hot encoding untuk 'region' (asumsi 'southwest' di-drop)
-        "region_northeast": 1 if region == "northeast" else 0,
         "region_northwest": 1 if region == "northwest" else 0,
         "region_southeast": 1 if region == "southeast" else 0,
+        "region_southwest": 1 if region == "southwest" else 0,
         # 'region_southwest' tidak dibuat sebagai kolom eksplisit,
         # tetapi diwakili ketika semua kolom region lainnya adalah 0.
     }
