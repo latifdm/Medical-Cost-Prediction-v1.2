@@ -35,8 +35,7 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "smoker": 0 if smoker == 'Ya' else 1,
         "region": 0 if region == 'southwest' else 1 if region == 'northeast' else 2 if region == 'northwest' else 3
     }
-     input_data_for_df = {col: data[col] for col in cols}
-     return pd.DataFrame([input_data_for_df])[cols]
+     return pd.DataFrame([data])[cols]
 
 
 # --- Sidebar, Pages, dll. setelah st.set_page_config dan fungsi pembantu ---
