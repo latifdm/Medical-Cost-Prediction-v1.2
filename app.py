@@ -6,39 +6,72 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
-     Gradient_Boosting_Regressor_Model = pickle.load(file)
+# 1. st.set_page_config() HARUS JADI YANG PERTAMA (setelah import)
+st.set_page_config(
+    page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
+)
 
-# --- Utility Functions (Global Scope, setelah set_page_config) ---
-def calculate_bmi(height, weight):
+# 2. Kemudian, panggil fungsi-fungsi Streamlit lain atau muat resource
+@st.cache_resource # Gunakan st.cache_resource untuk model/objek besar
+def load_model():
+    with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
+        model = pickle.load(file)
+    return model
+
+Gradient_Boosting_Regressor_Model = load_model()
+
+# --- Utility Functions ---
+def calculate_bmi(height_cm, weight_kg): # Variabel parameter disesuaikan
+    """
+    Calculates BMI given height in centimeters and weight in kilograms.
+    BMI = weight (kg) / (height (m))^2
+    """
     if height_cm <= 0 or weight_kg <= 0:
         return 0 # Handle invalid input gracefully
     height_m = height_cm / 100
     return weight_kg / (height_m ** 2)
 
 def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
-    """Konversi input user ➜ DataFrame yang kompatibel dengan model."""
+    """Konversi input user ➜ DataFrame yang kompatibel dengan model (dengan one-hot encoding)."""
+    # Kolom ini HARUS SESUAI dengan 10 fitur yang digunakan model Anda saat dilatih.
+    # Berdasarkan diskusi sebelumnya, asumsi ini adalah yang paling mungkin untuk 10 fitur.
     cols = [
         "age",
-        "sex", 
         "bmi",
         "children",
-        "smoker",
-        "region",
+        "sex_female",      # Ini 2 fitur untuk 'sex' (female/male)
+        "sex_male",
+        "smoker_no",       # Ini 2 fitur untuk 'smoker' (no/yes)
+        "smoker_yes",
+        "region_northeast", # Ini 3 fitur untuk 'region' (asumsi 'southwest' di-drop)
+        "region_northwest",
+        "region_southeast",
     ]
 
     data = {
         "age": age,
-         "sex": 0 if sex == 'Pria' else 1,
         "bmi": bmi,
         "children": children,
-        "smoker": 0 if smoker == 'Ya' else 1,
-        "region": 0 if region == 'southwest' else 1 if region == 'northeast' else 2 if region == 'northwest' else 3
+        # One-hot encoding untuk 'sex'
+        "sex_female": 1 if sex == "Wanita" else 0,
+        "sex_male": 1 if sex == "Pria" else 0,
+        # One-hot encoding untuk 'smoker'
+        "smoker_no": 1 if smoker == "Tidak" else 0,
+        "smoker_yes": 1 if smoker == "Ya" else 0,
+        # One-hot encoding untuk 'region' (asumsi 'southwest' di-drop)
+        "region_northeast": 1 if region == "northeast" else 0,
+        "region_northwest": 1 if region == "northwest" else 0,
+        "region_southeast": 1 if region == "southeast" else 0,
+        # 'region_southwest' tidak dibuat sebagai kolom eksplisit,
+        # tetapi diwakili ketika semua kolom region lainnya adalah 0.
     }
-     return pd.DataFrame([data])[cols]
+
+    # Buat DataFrame hanya dengan kolom yang ada di `cols` dan urutan yang benar
+    input_data_for_df = {col: data[col] for col in cols}
+    return pd.DataFrame([input_data_for_df])[cols] # Ini diindentasi dengan benar
 
 
-# --- Sidebar, Pages, dll. setelah st.set_page_config dan fungsi pembantu ---
+# --- Sidebar, Pages, dll. ---
 with st.sidebar:
     st.markdown("### Menu")
     page = st.selectbox(
@@ -144,9 +177,12 @@ elif page == "Machine Learning App":
         with st.expander("Detail input"):
             st.dataframe(input_df, use_container_width=True)
 
+# -----------------------------------------------------------------------------
+# 📊 PAGE — Dashboard
+# -----------------------------------------------------------------------------
 elif page == "Dashboard":
     st.title("📊 Medical Cost Dashboard")
-    #st.markdown("Analisis data dan visualisasi statistik pasien.")
+    st.markdown("Analisis data dan visualisasi statistik pasien.")
 
     try:
         df = pd.read_csv("insurance.csv")
