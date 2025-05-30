@@ -145,12 +145,9 @@ elif page == "Machine Learning App":
         with st.expander("Detail input"):
             st.dataframe(input_df, use_container_width=True)
 
-# -----------------------------------------------------------------------------
-# 📊 PAGE — Dashboard
-# -----------------------------------------------------------------------------
 elif page == "Dashboard":
     st.title("📊 Medical Cost Dashboard")
-    st.markdown("Analisis data dan visualisasi statistik pasien.")
+    #st.markdown("Analisis data dan visualisasi statistik pasien.")
 
     try:
         df = pd.read_csv("insurance.csv")
