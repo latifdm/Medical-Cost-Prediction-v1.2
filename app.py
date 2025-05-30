@@ -20,22 +20,19 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
     """Konversi input user ➜ DataFrame yang kompatibel dengan model."""
     cols = [
         "age",
+        "sex", 
         "bmi",
         "children",
-        "sex",
         "smoker",
         "region",
     ]
 
     data = {
         "age": age,
+         "sex": 0 if sex == 'Pria' else 1,
         "bmi": bmi,
         "children": children,
-        # one-hot encoding — sex (matching 'Pria'/'Wanita' from selectbox)
-        "sex": 0 if sex == 'Pria' else 1,
-        # one-hot encoding — smoker (matching 'Ya'/'Tidak' from selectbox)
         "smoker": 0 if smoker == 'Ya' else 1,
-        # one-hot encoding — region
         "region": 0 if region == 'southwest' else 1 if region == 'northeast' else 2 if region == 'northwest' else 3
     }
 input_data_for_df = {col: data[col] for col in cols}
