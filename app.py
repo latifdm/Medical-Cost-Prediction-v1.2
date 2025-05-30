@@ -11,14 +11,8 @@ st.set_page_config(
     page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
 )
 
-# 2. Kemudian, panggil fungsi-fungsi Streamlit lain atau muat resource
-@st.cache_resource # Use st.cache_resource for models/large objects
-def load_model():
-    with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
-        model = pickle.load(file)
-    return model
-
-Gradient_Boosting_Regressor_Model = load_model()
+with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
+     Gradient_Boosting_Regressor_Model = pickle.load(file)
 
 # --- Utility Functions (Global Scope, setelah set_page_config) ---
 def calculate_bmi(height_cm, weight_kg):
