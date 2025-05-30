@@ -1,12 +1,17 @@
 import streamlit as st
-import streamlit.components.v1 as stc # Not used in the provided snippet, but keeping it
+import streamlit.components.v1 as stc
 import pickle
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load the model (cached if possible by Streamlit)
+# 1. st.set_page_config() HARUS JADI YANG PERTAMA (setelah import)
+st.set_page_config(
+    page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
+)
+
+# 2. Kemudian, panggil fungsi-fungsi Streamlit lain atau muat resource
 @st.cache_resource # Use st.cache_resource for models/large objects
 def load_model():
     with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
@@ -15,22 +20,7 @@ def load_model():
 
 Gradient_Boosting_Regressor_Model = load_model()
 
-st.set_page_config(
-    page_title="Medical Cost Prediction", page_icon="💊", layout="centered"
-)
-
-with st.sidebar:
-    st.markdown("### Menu")
-    # This selectbox label is explicitly set, so it's unlikely to be the cause of the 'empty label' warning.
-    # The warning might come from some other internal Streamlit component if not this one.
-    page = st.selectbox(
-        label="Navigasi",
-        options=["Home", "Machine Learning App", "Dashboard"],
-        index=0,
-        label_visibility="collapsed"
-    )
-
-# --- Utility Functions (Global Scope) ---
+# --- Utility Functions (Global Scope, setelah set_page_config) ---
 def calculate_bmi(height_cm, weight_kg):
     """
     Calculates BMI given height in centimeters and weight in kilograms.
@@ -75,6 +65,17 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
     }
 
     return pd.DataFrame([data])[cols]
+
+
+# --- Sidebar, Pages, dll. setelah st.set_page_config dan fungsi pembantu ---
+with st.sidebar:
+    st.markdown("### Menu")
+    page = st.selectbox(
+        label="Navigasi",
+        options=["Home", "Machine Learning App", "Dashboard"],
+        index=0,
+        label_visibility="collapsed"
+    )
 
 # -----------------------------------------------------------------------------
 # 🏠 PAGE — Home
@@ -139,6 +140,7 @@ elif page == "Machine Learning App":
 
     # Membuat Struktur Form
     left, right = st.columns((2, 2))
+    # Pastikan semua widget input Anda memiliki label eksplisit
     age = st.slider("Usia", 18, 100, 30)
     sex = left.selectbox('Jenis Kelamin', ('Pria', 'Wanita'))
     smoker = right.selectbox('Apakah Merokok', ('Ya', 'Tidak'))
