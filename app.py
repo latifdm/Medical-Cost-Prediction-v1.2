@@ -41,7 +41,7 @@ def preprocess_input(age, bmi, children, sex, smoker, region) -> pd.DataFrame:
         "children",
         "sex_male",
         "smoker_yes",
-        "region_nortwest", 
+        "region_northwest", 
         "region_southeast",
         "region_southwest",
     ]
@@ -141,11 +141,11 @@ elif page == "Machine Learning App":
     # Membuat Struktur Form
     left, right = st.columns((2, 2))
     # Pastikan semua widget input Anda memiliki label eksplisit
-    age = st.slider("Usia", 18, 100, 30)
+    age = st.number_input('Usia', value=25)
     sex = left.selectbox('Jenis Kelamin', ('Pria', 'Wanita'))
     smoker = right.selectbox('Apakah Merokok', ('Ya', 'Tidak'))
-    height = left.number_input('Tinggi Badan (cm)', min_value=100.0, max_value=250.0, value=170.0)
-    weight = right.number_input('Berat Badan (kg)', min_value=30.0, max_value=200.0, value=70.0)
+    height = left.number_input('Tinggi Badan (cm)', value=170.0)
+    weight = right.number_input('Berat Badan (kg)', value=70.0)
     children = left.selectbox("Jumlah Anak", list(range(0, 6)), index=0)
     region = right.selectbox('Lokasi Tinggal', ("southeast", "southwest", "northwest"))
 
@@ -163,9 +163,8 @@ elif page == "Machine Learning App":
 
         # Preprocess input with the correct variable names
         input_df = preprocess_input(age, bmi, children, sex, smoker, region)
-
-        with st.spinner("Menghitung prediksi ..."):
-            prediction = Gradient_Boosting_Regressor_Model.predict(input_df)[0]
+        
+        prediction = Gradient_Boosting_Regressor_Model.predict(input_df)[0]
 
         st.subheader("💵 Estimasi Biaya Medis Tahunan")
         st.metric("Charges (USD)", f"${prediction:,.2f}")
