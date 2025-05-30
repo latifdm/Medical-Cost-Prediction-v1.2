@@ -10,7 +10,7 @@ with open('gradient_boosting_regressor_model.pkl', 'rb') as file:
      Gradient_Boosting_Regressor_Model = pickle.load(file)
 
 # --- Utility Functions (Global Scope, setelah set_page_config) ---
-def calculate_bmi(height_cm, weight_kg):
+def calculate_bmi(height, weight):
     if height_cm <= 0 or weight_kg <= 0:
         return 0 # Handle invalid input gracefully
     height_m = height_cm / 100
@@ -150,7 +150,7 @@ elif page == "Machine Learning App":
         input_df = preprocess_input(age, sex, bmi, children, smoker, region)
 
         with st.spinner("Menghitung prediksi ..."):
-            prediction = model.predict(input_df)[0]
+            prediction = Gradient_Boosting_Regressor_Model.predict(input_df)[0]
 
         st.subheader("💵 Estimasi Biaya Medis Tahunan")
         st.metric("Charges (USD)", f"${prediction:,.2f}")
