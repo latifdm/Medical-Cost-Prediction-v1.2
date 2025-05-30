@@ -29,7 +29,7 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "region_northeast",
         "region_northwest",
         "region_southeast",
-        "region_southwest",
+        #"region_southwest",
     ]
 
     data = {
@@ -46,10 +46,10 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
         "region_northeast": 1 if region == "northeast" else 0,
         "region_northwest": 1 if region == "northwest" else 0,
         "region_southeast": 1 if region == "southeast" else 0,
-        "region_southwest": 1 if region == "southwest" else 0,
+        #"region_southwest": 1 if region == "southwest" else 0,
     }
-
-    return pd.DataFrame([data])[cols]
+input_data_for_df = {col: data[col] for col in cols}
+return pd.DataFrame([input_data_for_df])[cols]
 
 
 # --- Sidebar, Pages, dll. setelah st.set_page_config dan fungsi pembantu ---
