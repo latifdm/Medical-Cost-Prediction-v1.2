@@ -38,14 +38,12 @@ def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
     cols = [
         "age",
         "bmi",
-        "children",
-        "sex_female",      # Ini 2 fitur untuk 'sex' (female/male)
-        "sex_male",
-        "smoker_no",       # Ini 2 fitur untuk 'smoker' (no/yes)
+        "children",     # Ini 2 fitur untuk 'sex' (female/male)
+        "sex_male",      # Ini 2 fitur untuk 'smoker' (no/yes)
         "smoker_yes",
-        "region_northeast", # Ini 3 fitur untuk 'region' (asumsi 'southwest' di-drop)
-        "region_northwest",
+        "region_nortwest", 
         "region_southeast",
+        "region_southwest",
     ]
 
     data = {
