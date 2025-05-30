@@ -21,25 +21,25 @@ def load_model():
 Gradient_Boosting_Regressor_Model = load_model()
 
 # --- Utility Functions ---
-def calculate_bmi(height_cm, weight_kg): # Variabel parameter disesuaikan
+def calculate_bmi(height, weight): # Variabel parameter disesuaikan
     """
     Calculates BMI given height in centimeters and weight in kilograms.
     BMI = weight (kg) / (height (m))^2
     """
-    if height_cm <= 0 or weight_kg <= 0:
+    if height <= 0 or weight <= 0:
         return 0 # Handle invalid input gracefully
-    height_m = height_cm / 100
-    return weight_kg / (height_m ** 2)
+    height_m = height / 100
+    return weight / (height_m ** 2)
 
-def preprocess_input(age, sex, bmi, children, smoker, region) -> pd.DataFrame:
+def preprocess_input(age, bmi, children, sex, smoker, region) -> pd.DataFrame:
     """Konversi input user ➜ DataFrame yang kompatibel dengan model (dengan one-hot encoding)."""
     # Kolom ini HARUS SESUAI dengan 10 fitur yang digunakan model Anda saat dilatih.
     # Berdasarkan diskusi sebelumnya, asumsi ini adalah yang paling mungkin untuk 10 fitur.
     cols = [
         "age",
         "bmi",
-        "children",     # Ini 2 fitur untuk 'sex' (female/male)
-        "sex_male",      # Ini 2 fitur untuk 'smoker' (no/yes)
+        "children",
+        "sex_male",
         "smoker_yes",
         "region_nortwest", 
         "region_southeast",
@@ -147,7 +147,7 @@ elif page == "Machine Learning App":
     height = left.number_input('Tinggi Badan (cm)', min_value=100.0, max_value=250.0, value=170.0)
     weight = right.number_input('Berat Badan (kg)', min_value=30.0, max_value=200.0, value=70.0)
     children = left.selectbox("Jumlah Anak", list(range(0, 6)), index=0)
-    region = right.selectbox('Lokasi Tinggal', ("southeast", "southwest", "northeast", "northwest"))
+    region = right.selectbox('Lokasi Tinggal', ("southeast", "southwest", "northwest"))
 
     # Calculate BMI here, before the predict button logic
     bmi = calculate_bmi(height, weight)
@@ -162,10 +162,10 @@ elif page == "Machine Learning App":
             st.stop()
 
         # Preprocess input with the correct variable names
-        input_df = preprocess_input(age, sex, bmi, children, smoker, region)
+        input_df = preprocess_input(age, bmi, children, sex, smoker, region)
 
         with st.spinner("Menghitung prediksi ..."):
-            prediction = model.predict(input_df)[0]
+            prediction = Gradient_Boosting_Regressor_Model.predict(input_df)[0]
 
         st.subheader("💵 Estimasi Biaya Medis Tahunan")
         st.metric("Charges (USD)", f"${prediction:,.2f}")
